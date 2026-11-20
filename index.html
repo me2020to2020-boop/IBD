@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#0e5a50" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="IBD Registry" />
     <link rel="icon" href="data:," />
     <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" href="icons/icon-192.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="IBD Registry" />
     <title>IBD Biologics Registry</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -72,6 +70,25 @@
       .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
       .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
 
+      .user-bar {
+        display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 8px 14px; margin-bottom: 14px; font-size: 13px; box-shadow: var(--shadow);
+      }
+      .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); margin-right: 6px; }
+      .auth-overlay {
+        position: fixed; inset: 0; background: var(--bg); z-index: 80;
+        display: flex; align-items: center; justify-content: center; padding: 16px;
+      }
+      .auth-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        padding: 26px 22px; width: 100%; max-width: 400px; box-shadow: var(--shadow);
+      }
+      .auth-card h2 { margin: 4px 0 6px; font-size: 22px; }
+      .auth-card p { color: var(--ink-2); font-size: 14px; margin: 0 0 16px; }
+      .auth-kicker { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--brand); }
+      .auth-err { background: var(--red-soft); color: var(--red); padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 12px; display: none; }
+
       header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
       header.top h1 { font-size: 26px; margin: 0; letter-spacing: -.01em; }
       header.top p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 56ch; }
@@ -131,7 +148,7 @@
 
       .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
       .toolbar .search { flex: 1 1 220px; }
-      input[type="search"], input[type="text"], input[type="number"], input[type="date"], select, textarea {
+      input[type="search"], input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select, textarea {
         font: inherit; font-size: 15px; color: var(--ink); background: var(--surface);
         border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%;
       }
@@ -158,7 +175,6 @@
       }
       .empty b { color: var(--ink); display: block; font-size: 17px; margin-bottom: 4px; }
 
-      /* Detail view */
       .backlink { margin-bottom: 14px; }
       .detail-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; }
       .detail-head h2 { font-size: 24px; margin: 0; }
@@ -186,7 +202,6 @@
       .mini-form .wide { grid-column: 1 / -1; }
       .mini-form .act { display: flex; align-items: flex-end; }
 
-      /* Modal form */
       dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); padding: 0; width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); }
       dialog::backdrop { background: rgba(10, 20, 17, .55); }
       dialog form { display: flex; flex-direction: column; max-height: calc(100dvh - 32px); }
@@ -207,7 +222,6 @@
       .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
       .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--surface); flex: none; }
 
-      /* Scores */
       .score-latest { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
       .score-chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; padding: 8px 11px; font-size: 13px; line-height: 1.35; }
       .score-chip b { font-size: 16px; font-family: "IBM Plex Mono", monospace; }
@@ -217,7 +231,6 @@
       .calc-total b { font-family: "IBM Plex Mono", monospace; font-size: 22px; }
       .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
       .comp-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-      /* Endoscopy photos */
       .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-top: 10px; }
       .photo-cell { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
       .photo-cell img { width: 100%; height: 88px; object-fit: cover; display: block; cursor: zoom-in; }
@@ -236,7 +249,7 @@
         position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
         background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px;
         font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
-        z-index: 50; max-width: calc(100vw - 32px); text-align: center;
+        z-index: 90; max-width: calc(100vw - 32px); text-align: center;
       }
       .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
       .confirm-bar {
@@ -265,11 +278,34 @@
     </style>
   </head>
   <body>
-    <div class="wrap">
+    <div id="authOverlay" class="auth-overlay">
+      <div class="auth-card">
+        <div class="auth-kicker">IBD Biologics Registry</div>
+        <h2>Team Sign In</h2>
+        <p>Sign in with your department account to view and sync biologic registry patients.</p>
+        <div id="authErr" class="auth-err"></div>
+        <form id="loginForm">
+          <label class="fl" style="margin-bottom:12px">Email
+            <input type="email" id="loginEmail" required autocomplete="email" placeholder="doctor@hospital.com" />
+          </label>
+          <label class="fl" style="margin-bottom:16px">Password
+            <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••" />
+          </label>
+          <button type="submit" class="btn primary" id="loginBtn" style="width:100%; justify-content:center;">Sign in</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="wrap hidden" id="appWrap">
+      <div class="user-bar">
+        <div><span class="sync-dot"></span><b id="userEmailLabel">Signed in</b> · <span id="syncLabel" style="color:var(--ink-2)">Connecting…</span></div>
+        <button class="btn small ghost" type="button" id="signOutBtn">Sign out</button>
+      </div>
+
       <header class="top">
         <div>
           <h1>IBD Biologics Registry</h1>
-          <p>Ulcerative colitis &amp; Crohn's disease patients on biologic therapy — doses, endoscopies, and follow-up updates. Data is saved on this device.</p>
+          <p>Ulcerative colitis &amp; Crohn's disease patients on biologic therapy — doses, endoscopies, and follow-up updates. Synced securely across signed-in devices.</p>
         </div>
         <div class="top-actions">
           <button class="btn primary" id="btnAddTop" type="button">+ Add patient</button>
@@ -309,7 +345,7 @@
           <div class="cards" id="cards"></div>
           <div class="empty hidden" id="emptyState">
             <b>No patients yet</b>
-            Add your first patient to start the registry. Everything is stored on this device and autosaved as you type.
+            Add your first patient to start the registry. Everything is synced to the cloud and cached offline on your device.
             <div style="margin-top:14px"><button class="btn primary" id="btnAddEmpty" type="button">+ Add patient</button></div>
           </div>
           <div class="empty hidden" id="noMatch">
@@ -324,8 +360,8 @@
       <!-- ===== Data tab ===== -->
       <section id="view-data" class="hidden">
         <div class="note-box">
-          <h3>Backup &amp; transfer</h3>
-          <p>Patients are autosaved on this device (this browser). To move the registry to another phone or hand it to a colleague, export a JSON file and import it there. Importing replaces the registry on the device you import into. Export includes IBD scores and endoscopy photos, so the file can be large if you attach many photos — keep an eye on the device storage and export a backup regularly.</p>
+          <h3>Cloud sync &amp; JSON backup</h3>
+          <p>Patients are synced automatically in real time across all signed-in team devices via Firebase. You can also export a JSON backup anytime or import a previous JSON file.</p>
           <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
             <button class="btn primary" id="btnExport" type="button">Export JSON</button>
             <button class="btn" id="btnImport" type="button">Import JSON</button>
@@ -335,8 +371,8 @@
         </div>
         <div class="note-box">
           <h3>Start over</h3>
-          <p>Remove every patient from this device. Export a backup first if you might need the data again.</p>
-          <button class="btn danger" id="btnWipe" type="button">Delete all data on this device</button>
+          <p>Remove every patient from the cloud registry. Export a backup first if you might need the data again.</p>
+          <button class="btn danger" id="btnWipe" type="button">Delete all patients</button>
         </div>
       </section>
 
@@ -359,7 +395,6 @@
             <li>Scroll down and tap <b>“Add to Home Screen”</b>, then tap Add.</li>
             <li>The registry icon appears on your home screen and opens like an app.</li>
           </ol>
-          <p>Note: the home-screen copy and the browser copy keep separate saved data on iPhone. Pick one copy for your patients and stick to it, and use Export JSON to move data between copies.</p>
         </div>
       </section>
 
@@ -480,9 +515,29 @@
       </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
     <script>
       "use strict";
+      var firebaseConfig = {
+        apiKey: "AIzaSyC_w_wWtIwkyiPJbYOnoY23qY_tft3SOQs",
+        authDomain: "handover-d6cfb.firebaseapp.com",
+        projectId: "handover-d6cfb",
+        storageBucket: "handover-d6cfb.firebasestorage.app",
+        messagingSenderId: "234241266308",
+        appId: "1:234241266308:web:208185ac2cfe97f51368d1"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var auth = firebase.auth();
+      var db = firebase.firestore();
+      db.enablePersistence({ synchronizeTabs: true }).catch(function () {});
+      var colRef = db.collection("ibd_patients");
+
       var STORE_KEY = "ibd-biologics-registry-v1";
+      var currentUser = null;
+      var unsubCloud = null;
 
       var DRUGS = ["Infliximab","Adalimumab","Vedolizumab","Ustekinumab","Risankizumab","Mirikizumab","Golimumab","Certolizumab pegol","Upadacitinib","Tofacitinib","Ozanimod","Other"];
       var BRANDS = [
@@ -503,8 +558,8 @@
       ];
       var SCOPE_TYPES = ["Colonoscopy","Gastroscopy (upper GI)","ERCP","Sigmoidoscopy","Capsule endoscopy","Intestinal ultrasound","Other"];
 
-      /* ---------- storage ---------- */
-      function load() {
+      /* ---------- storage & cloud sync ---------- */
+      function loadLocal() {
         try {
           var raw = localStorage.getItem(STORE_KEY);
           if (!raw) return [];
@@ -512,10 +567,30 @@
           return Array.isArray(data) ? data : [];
         } catch (e) { return []; }
       }
-      function save() {
-        try { localStorage.setItem(STORE_KEY, JSON.stringify(patients)); } catch (e) { toast("Could not save on this device"); }
+      function saveLocal() {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(patients)); } catch (e) {}
       }
-      var patients = load();
+      function syncPatient(p) {
+        saveLocal();
+        if (!currentUser || !p || !p.id) return;
+        $("syncLabel").textContent = "Saving…";
+        var copy = JSON.parse(JSON.stringify(p));
+        copy.updatedAt = new Date().toISOString();
+        copy.updatedBy = currentUser.email || "";
+        colRef.doc(p.id).set(copy).then(function () {
+          var t = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+          $("syncLabel").textContent = "Synced · " + t;
+        }).catch(function () {
+          $("syncLabel").textContent = "Offline (saved locally)";
+        });
+      }
+      function deletePatientCloud(id) {
+        saveLocal();
+        if (!currentUser || !id) return;
+        colRef.doc(id).delete().catch(function () {});
+      }
+
+      var patients = loadLocal();
       var currentId = null;
       var editingId = null;
 
@@ -565,6 +640,75 @@
       function findPatient(id) { for (var i = 0; i < patients.length; i++) if (patients[i].id === id) return patients[i]; return null; }
       function dxName(dx) { return dx === "CD" ? "Crohn's disease" : "Ulcerative colitis"; }
 
+      /* ---------- Auth ---------- */
+      $("loginForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var email = $("loginEmail").value.trim();
+        var pass = $("loginPass").value;
+        var errEl = $("authErr");
+        errEl.style.display = "none";
+        $("loginBtn").disabled = true;
+        $("loginBtn").textContent = "Signing in…";
+        auth.signInWithEmailAndPassword(email, pass).catch(function () {
+          errEl.textContent = "Invalid email or password. Please try again.";
+          errEl.style.display = "block";
+          $("loginBtn").disabled = false;
+          $("loginBtn").textContent = "Sign in";
+        });
+      });
+
+      $("signOutBtn").addEventListener("click", function () {
+        if (unsubCloud) { unsubCloud(); unsubCloud = null; }
+        auth.signOut();
+      });
+
+      auth.onAuthStateChanged(function (user) {
+        currentUser = user;
+        if (user) {
+          $("authOverlay").classList.add("hidden");
+          $("appWrap").classList.remove("hidden");
+          $("userEmailLabel").textContent = user.email;
+          $("loginBtn").disabled = false;
+          $("loginBtn").textContent = "Sign in";
+          startCloudSync();
+        } else {
+          $("authOverlay").classList.remove("hidden");
+          $("appWrap").classList.add("hidden");
+          if (unsubCloud) { unsubCloud(); unsubCloud = null; }
+        }
+      });
+
+      function startCloudSync() {
+        if (unsubCloud) unsubCloud();
+        $("syncLabel").textContent = "Syncing…";
+        unsubCloud = colRef.onSnapshot(function (snap) {
+          var arr = [];
+          snap.forEach(function (doc) {
+            var d = doc.data();
+            d.id = doc.id;
+            arr.push(d);
+          });
+          if (arr.length === 0 && patients.length > 0 && !snap.metadata.fromCache) {
+            /* Push any existing local patients on first cloud connection */
+            patients.forEach(function (p) { syncPatient(p); });
+            return;
+          }
+          patients = arr;
+          saveLocal();
+          var t = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+          $("syncLabel").textContent = (snap.metadata.fromCache ? "Offline cache · " : "Live sync · ") + t;
+          if (currentId) {
+            if (findPatient(currentId)) openDetail(currentId, true);
+            else closeDetail();
+          } else {
+            renderList();
+          }
+          renderDataInfo();
+        }, function () {
+          $("syncLabel").textContent = "Offline mode";
+        });
+      }
+
       /* ---------- IBD scores ---------- */
       var SCORE_TYPES = [
         { id: "mayo", label: "Mayo Score (Full) — UC", short: "Mayo" },
@@ -597,6 +741,7 @@
         var arr = (p.scores || []).filter(function (s) { return !type || s.type === type; }).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
         return arr[0] || null;
       }
+
       /* ---------- endoscopy photos: shrink on device before saving ---------- */
       function processImageFiles(fileList, done) {
         var files = Array.prototype.slice.call(fileList || []).filter(function (f) { return f.type && f.type.indexOf("image/") === 0; });
@@ -608,12 +753,12 @@
             var img = new Image();
             img.onload = function () {
               try {
-                var maxDim = 1280, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+                var maxDim = 900, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
                 var scale = Math.min(1, maxDim / Math.max(w, h));
                 var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
                 var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
                 cv.getContext("2d").drawImage(img, 0, 0, cw, ch);
-                out.push({ data: cv.toDataURL("image/jpeg", 0.82), name: f.name || "Endoscopy photo" });
+                out.push({ data: cv.toDataURL("image/jpeg", 0.72), name: f.name || "Endoscopy photo" });
               } catch (e) { out.push({ data: String(reader.result), name: f.name || "Endoscopy photo" }); }
               if (--pending === 0) done(out);
             };
@@ -730,7 +875,7 @@
       function renderList() { renderStats(); renderQueue(); renderCards(); }
 
       /* ---------- detail view ---------- */
-      function openDetail(id) {
+      function openDetail(id, preserveScroll) {
         currentId = id;
         var p = findPatient(id);
         if (!p) return;
@@ -812,7 +957,7 @@
               '<label class="fl">Status<select id="s_status"><option>Booked</option><option>Done</option></select></label>' +
               '<label class="fl">Performed by<input type="text" id="s_by" placeholder="Endoscopist" /></label>' +
               '<label class="fl wide">Result / findings<input type="text" id="s_result" placeholder="Findings, biopsies, scores…" /></label>' +
-              '<label class="fl wide">Endoscopy photos (optional)<input type="file" id="s_photos" accept="image/*" multiple /><span class="photo-hint">You can select several images. They are resized on this device and saved with this endoscopy — and included in Export JSON.</span></label>' +
+              '<label class="fl wide">Endoscopy photos (optional)<input type="file" id="s_photos" accept="image/*" multiple /><span class="photo-hint">Images are resized automatically and synced with this endoscopy.</span></label>' +
               '<div class="act"><button class="btn primary small" type="submit">Add endoscopy</button></div>' +
             "</form></div>" +
 
@@ -835,9 +980,9 @@
         $("btnBack").addEventListener("click", closeDetail);
         $("btnEdit").addEventListener("click", function () { openPatientForm(p); });
         $("btnDelete").addEventListener("click", function () {
-          askConfirm("Delete " + p.name + " and all their records from this device?", function () {
+          askConfirm("Delete " + p.name + " and all their records from the registry?", function () {
             patients = patients.filter(function (x) { return x.id !== p.id; });
-            save(); closeDetail(); renderList(); toast("Patient deleted");
+            deletePatientCloud(p.id); closeDetail(); renderList(); toast("Patient deleted");
           });
         });
         $("btnCopy").addEventListener("click", function () { copySummary(p); });
@@ -849,9 +994,9 @@
           p.doses.push({ date: date, dose: $("d_dose").value.trim(), note: $("d_note").value.trim() });
           p.lastDose = date;
           if (p.intervalWeeks) p.nextDose = addDays(date, Number(p.intervalWeeks) * 7);
-          save(); openDetail(p.id); toast("Dose logged — next dose " + fmtDate(p.nextDose));
+          syncPatient(p); openDetail(p.id, true); toast("Dose logged — next dose " + fmtDate(p.nextDose));
         });
-        /* ----- Scores calculator ----- */
+
         function selField(id, label, opts) {
           return '<label class="fl">' + label + '<select id="' + id + '" class="sc-in">' + opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + "</option>"; }).join("") + "</select></label>";
         }
@@ -893,7 +1038,7 @@
               numField("sc_cd_wt", "% below standard weight (×1)", 0, -30, 60) + "</div>";
           } else if (t === "sescd") {
             h = '<div class="calc-grid">' + numField("sc_manual", "SES-CD total (from the endoscopy report)", 0, 0, 60) + "</div>" +
-              '<p style="font-size:13px; color:var(--ink-2); margin:8px 0 0;">SES-CD sums ulcer size, ulcerated & affected surface and narrowing across 5 segments. Copy the total from the report; the interpretation is added automatically.</p>';
+              '<p style="font-size:13px; color:var(--ink-2); margin:8px 0 0;">SES-CD sums ulcer size, ulcerated & affected surface and narrowing across 5 segments.</p>';
           }
           box.innerHTML = h;
           box.querySelectorAll(".sc-chip-btn").forEach(function (c) { c.addEventListener("click", function () { c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true"); calcScore(); }); });
@@ -905,7 +1050,6 @@
         function calcScore() {
           var t = $("sc_type").value, total = 0, parts = [];
           function v(id) { var el = $(id); return el ? Number(el.value) || 0 : 0; }
-          function vt(id) { var el = $(id); return el ? el.options[el.selectedIndex].text : ""; }
           if (t === "mayo" || t === "pmayo") {
             total = v("sc_stool") + v("sc_bleed") + v("sc_pga") + (t === "mayo" ? v("sc_endo") : 0);
             parts = ["Stool " + v("sc_stool"), "Bleeding " + v("sc_bleed")]; if (t === "mayo") parts.push("Endoscopy " + v("sc_endo")); parts.push("PGA " + v("sc_pga"));
@@ -931,7 +1075,7 @@
           var r = calcScore();
           p.scores = p.scores || [];
           p.scores.push({ type: r.type, date: $("sc_date").value || todayStr(), total: r.total, interpretation: r.interpretation, detail: r.detail, note: $("sc_note").value.trim() });
-          save(); openDetail(p.id); toast(scoreShort(r.type) + " saved — " + r.total + " (" + r.interpretation + ")");
+          syncPatient(p); openDetail(p.id, true); toast(scoreShort(r.type) + " saved — " + r.total + " (" + r.interpretation + ")");
         });
 
         $("formScope").addEventListener("submit", function (ev) {
@@ -943,7 +1087,7 @@
             entry.photos = photos;
             p.endoscopies = p.endoscopies || [];
             p.endoscopies.push(entry);
-            save(); openDetail(p.id); toast(photos.length ? "Endoscopy added with " + photos.length + (photos.length === 1 ? " photo" : " photos") : "Endoscopy added");
+            syncPatient(p); openDetail(p.id, true); toast(photos.length ? "Endoscopy added with " + photos.length + (photos.length === 1 ? " photo" : " photos") : "Endoscopy added");
           });
         });
         $("formUpdate").addEventListener("submit", function (ev) {
@@ -951,19 +1095,19 @@
           var text = $("u_text").value.trim(); if (!text) return;
           p.updates = p.updates || [];
           p.updates.push({ date: $("u_date").value || todayStr(), consultant: $("u_consultant").value.trim(), text: text });
-          save(); openDetail(p.id); toast("Update added");
+          syncPatient(p); openDetail(p.id, true); toast("Update added");
         });
         dv.querySelectorAll("[data-deldose]").forEach(function (b) {
-          b.addEventListener("click", function () { p.doses.splice(Number(b.getAttribute("data-deldose")), 1); save(); openDetail(p.id); });
+          b.addEventListener("click", function () { p.doses.splice(Number(b.getAttribute("data-deldose")), 1); syncPatient(p); openDetail(p.id, true); });
         });
         dv.querySelectorAll("[data-delscope]").forEach(function (b) {
-          b.addEventListener("click", function () { p.endoscopies.splice(Number(b.getAttribute("data-delscope")), 1); save(); openDetail(p.id); });
+          b.addEventListener("click", function () { p.endoscopies.splice(Number(b.getAttribute("data-delscope")), 1); syncPatient(p); openDetail(p.id, true); });
         });
         dv.querySelectorAll("[data-delupdate]").forEach(function (b) {
-          b.addEventListener("click", function () { p.updates.splice(Number(b.getAttribute("data-delupdate")), 1); save(); openDetail(p.id); });
+          b.addEventListener("click", function () { p.updates.splice(Number(b.getAttribute("data-delupdate")), 1); syncPatient(p); openDetail(p.id, true); });
         });
         dv.querySelectorAll("[data-delscore]").forEach(function (b) {
-          b.addEventListener("click", function () { p.scores.splice(Number(b.getAttribute("data-delscore")), 1); save(); openDetail(p.id); });
+          b.addEventListener("click", function () { p.scores.splice(Number(b.getAttribute("data-delscore")), 1); syncPatient(p); openDetail(p.id, true); });
         });
         dv.querySelectorAll("[data-addphoto]").forEach(function (b) {
           b.addEventListener("click", function () {
@@ -984,10 +1128,10 @@
           b.addEventListener("click", function () {
             var parts = b.getAttribute("data-delphoto").split(":"), e = (p.endoscopies || [])[Number(parts[0])];
             if (!e || !e.photos) return;
-            e.photos.splice(Number(parts[1]), 1); save(); openDetail(p.id); toast("Photo removed");
+            e.photos.splice(Number(parts[1]), 1); syncPatient(p); openDetail(p.id, true); toast("Photo removed");
           });
         });
-        window.scrollTo(0, 0);
+        if (!preserveScroll) window.scrollTo(0, 0);
       }
       function closeDetail() {
         currentId = null;
@@ -996,7 +1140,7 @@
         $("listView").classList.remove("hidden");
         renderList();
       }
-      /* ----- Add photos to an existing endoscopy ----- */
+
       var pendingPhotoScope = null, pendingPhotoPatient = null;
       $("fileScopePhoto").addEventListener("change", function () {
         var files = this.files; this.value = "";
@@ -1005,13 +1149,12 @@
         var e = (p.endoscopies || [])[pendingPhotoScope]; if (!e) return;
         processImageFiles(files, function (photos) {
           e.photos = (e.photos || []).concat(photos);
-          save(); openDetail(p.id); toast(photos.length + (photos.length === 1 ? " photo" : " photos") + " added");
+          syncPatient(p); openDetail(p.id, true); toast(photos.length + (photos.length === 1 ? " photo" : " photos") + " added");
           pendingPhotoScope = null; pendingPhotoPatient = null;
         });
       });
       $("btnClosePhoto").addEventListener("click", function () { var d = $("dlgPhoto"); if (d.close) d.close(); else d.removeAttribute("open"); });
 
-      // In-page confirmation bar (window.confirm is unavailable in embedded views).
       var confirmCb = null;
       function askConfirm(msg, cb) {
         $("confirmMsg").textContent = msg;
@@ -1156,14 +1299,14 @@
         };
         if (editingId) {
           var p = findPatient(editingId);
-          if (p) { Object.keys(data).forEach(function (k) { p[k] = data[k]; }); }
-          save(); $("dlgPatient").close(); toast("Patient updated");
+          if (p) { Object.keys(data).forEach(function (k) { p[k] = data[k]; }); syncPatient(p); }
+          $("dlgPatient").close(); toast("Patient updated");
           renderStats();
-          if (currentId === editingId) openDetail(editingId); else renderList();
+          if (currentId === editingId) openDetail(editingId, true); else renderList();
         } else {
           data.id = uid(); data.doses = []; data.endoscopies = []; data.updates = []; data.scores = [];
           patients.push(data);
-          save(); $("dlgPatient").close(); toast("Patient added");
+          syncPatient(data); $("dlgPatient").close(); toast("Patient added");
           renderStats();
           openDetail(data.id);
         }
@@ -1180,7 +1323,7 @@
       /* ---------- data tab ---------- */
       function renderDataInfo() {
         var el = $("dataInfo");
-        if (el) el.textContent = patients.length + (patients.length === 1 ? " patient" : " patients") + " stored on this device.";
+        if (el) el.textContent = patients.length + (patients.length === 1 ? " patient" : " patients") + " synced in the cloud registry.";
       }
       $("btnExport").addEventListener("click", function () {
         var blob = new Blob([JSON.stringify({ app: "ibd-biologics-registry", version: 1, exported: new Date().toISOString(), patients: patients }, null, 2)], { type: "application/json" });
@@ -1206,22 +1349,28 @@
               p.doses = p.doses || []; p.endoscopies = p.endoscopies || []; p.updates = p.updates || []; p.scores = p.scores || [];
               p.endoscopies.forEach(function (e) { e.photos = e.photos || []; });
               if (p.diagnosis !== "CD") p.diagnosis = "UC";
+              syncPatient(p);
             });
             patients = arr;
-            save(); closeDetail(); renderList(); renderDataInfo();
-            toast("Imported " + arr.length + (arr.length === 1 ? " patient" : " patients"));
+            saveLocal(); closeDetail(); renderList(); renderDataInfo();
+            toast("Imported & synced " + arr.length + (arr.length === 1 ? " patient" : " patients"));
           } catch (e) { toast("That file could not be imported"); }
           $("fileImport").value = "";
         };
         r.readAsText(f);
       });
       $("btnWipe").addEventListener("click", function () {
-        askConfirm("Delete ALL patients from this device? This cannot be undone.", function () {
-          patients = []; save(); closeDetail(); renderList(); renderDataInfo(); toast("All data deleted from this device");
+        askConfirm("Delete ALL patients from the cloud registry? This cannot be undone.", function () {
+          patients.forEach(function (p) { deletePatientCloud(p.id); });
+          patients = []; saveLocal(); closeDetail(); renderList(); renderDataInfo(); toast("All patients deleted");
         });
       });
 
-      if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("sw.js").catch(function () {});
+        });
+      }
       renderList();
     </script>
   </body>
