@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0e5a50" />
+    <link rel="icon" href="data:," />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="IBD Registry" />
+    <title>IBD Biologics Registry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #f4f6f5;
+        --surface: #ffffff;
+        --surface-2: #eef2f0;
+        --ink: #16211e;
+        --ink-2: #44554f;
+        --ink-3: #71827b;
+        --line: #d8e0dc;
+        --brand: #0e5a50;
+        --brand-ink: #ffffff;
+        --brand-soft: #dcefe9;
+        --amber: #9a6206;
+        --amber-soft: #fbeecd;
+        --red: #a02c22;
+        --red-soft: #fbe7e3;
+        --blue: #1d4e79;
+        --blue-soft: #e0ecf5;
+        --radius: 10px;
+        --shadow: 0 1px 2px rgba(16, 40, 34, .06), 0 4px 14px rgba(16, 40, 34, .05);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101613;
+          --surface: #1a211e;
+          --surface-2: #232c28;
+          --ink: #e8efec;
+          --ink-2: #b3c2bb;
+          --ink-3: #84958c;
+          --line: #33403a;
+          --brand: #2f9e8a;
+          --brand-ink: #0b1512;
+          --brand-soft: #173d35;
+          --amber: #e5b45c;
+          --amber-soft: #3d3011;
+          --red: #ef9a8f;
+          --red-soft: #40201c;
+          --blue: #8fc0e8;
+          --blue-soft: #1d3049;
+          --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.45;
+      }
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+      .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+      .wrap { max-width: 1060px; margin: 0 auto; padding: 20px 16px 64px; }
+
+      header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+      header.top h1 { font-size: 26px; margin: 0; letter-spacing: -.01em; }
+      header.top p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; max-width: 56ch; }
+      .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+      .btn {
+        appearance: none; border: 1px solid var(--line); background: var(--surface);
+        color: var(--ink); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px;
+        font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+        min-height: 40px;
+      }
+      .btn:hover { border-color: var(--ink-3); }
+      .btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+      .btn.primary:hover { filter: brightness(1.08); }
+      .btn.danger { color: var(--red); border-color: var(--red); background: transparent; }
+      .btn.small { min-height: 36px; padding: 5px 10px; font-size: 13px; }
+      .btn.ghost { background: transparent; }
+
+      nav.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; }
+      nav.tabs button {
+        appearance: none; border: 0; background: transparent; color: var(--ink-2);
+        font: inherit; font-weight: 600; font-size: 15px; padding: 10px 14px; cursor: pointer;
+        border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; min-height: 44px;
+      }
+      nav.tabs button[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand); }
+      nav.tabs .count { background: var(--surface-2); border-radius: 999px; padding: 1px 8px; font-size: 12px; margin-left: 4px; }
+
+      .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 22px; }
+      .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+      .stat .num { font-size: 30px; font-weight: 700; line-height: 1; font-family: "IBM Plex Mono", monospace; }
+      .stat .lbl { color: var(--ink-2); font-size: 13px; margin-top: 6px; }
+      .stat.alert .num { color: var(--red); }
+      .stat.warn .num { color: var(--amber); }
+
+      h2.sec { font-size: 18px; margin: 26px 0 10px; display: flex; align-items: center; gap: 8px; }
+      h2.sec:first-child { margin-top: 0; }
+
+      .queue { display: flex; flex-direction: column; gap: 8px; }
+      .qitem {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+        cursor: pointer; box-shadow: var(--shadow); text-align: left; width: 100%; font: inherit; color: inherit;
+      }
+      .qitem:hover { border-color: var(--ink-3); }
+      .qitem .who { font-weight: 700; }
+      .qitem .what { color: var(--ink-2); font-size: 14px; }
+      .qitem .when { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600; }
+
+      .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 600; line-height: 1.5; }
+      .pill.uc { background: var(--blue-soft); color: var(--blue); }
+      .pill.cd { background: var(--brand-soft); color: var(--brand); }
+      .pill.overdue { background: var(--red-soft); color: var(--red); }
+      .pill.soon { background: var(--amber-soft); color: var(--amber); }
+      .pill.ok { background: var(--surface-2); color: var(--ink-2); }
+      .pill.done { background: var(--brand-soft); color: var(--brand); }
+      .pill.booked { background: var(--amber-soft); color: var(--amber); }
+
+      .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+      .toolbar .search { flex: 1 1 220px; }
+      input[type="search"], input[type="text"], input[type="number"], input[type="date"], select, textarea {
+        font: inherit; font-size: 15px; color: var(--ink); background: var(--surface);
+        border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%;
+      }
+      textarea { min-height: 72px; resize: vertical; }
+      input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); outline-offset: 0; border-color: var(--brand); }
+
+      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+      .pcard {
+        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+        padding: 16px; box-shadow: var(--shadow); cursor: pointer; text-align: left; width: 100%;
+        font: inherit; color: inherit; display: block;
+      }
+      .pcard:hover { border-color: var(--ink-3); }
+      .pcard .name { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .pcard .meta { color: var(--ink-2); font-size: 14px; margin-top: 2px; }
+      .pcard .drug { margin-top: 10px; font-size: 14px; }
+      .pcard .drug b { font-weight: 600; }
+      .pcard .next { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
+      .pcard .next .d { font-family: "IBM Plex Mono", monospace; font-weight: 600; }
+
+      .empty {
+        border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 34px 20px;
+        text-align: center; color: var(--ink-2); background: var(--surface);
+      }
+      .empty b { color: var(--ink); display: block; font-size: 17px; margin-bottom: 4px; }
+
+      /* Detail view */
+      .backlink { margin-bottom: 14px; }
+      .detail-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; }
+      .detail-head h2 { font-size: 24px; margin: 0; }
+      .detail-head .sub { color: var(--ink-2); margin-top: 4px; font-size: 15px; }
+      .head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-top: 14px; }
+      .panel h3 { margin: 0 0 12px; font-size: 16px; }
+      .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 18px; }
+      .kv div .k { font-size: 12px; color: var(--ink-3); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+      .kv div .v { font-size: 15px; margin-top: 2px; overflow-wrap: anywhere; }
+      .kv div .v:empty::after { content: "—"; color: var(--ink-3); }
+      .prose { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; }
+      .prose:empty::after { content: "Nothing recorded yet."; color: var(--ink-3); }
+
+      table.list { width: 100%; border-collapse: collapse; font-size: 14px; }
+      table.list th { text-align: left; color: var(--ink-3); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+      table.list td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+      table.list tr:last-child td { border-bottom: 0; }
+      .stack { display: flex; flex-direction: column; gap: 10px; }
+      .entry { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface-2); }
+      .entry .top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+      .entry .body { margin-top: 4px; font-size: 15px; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .entry .by { color: var(--ink-2); font-size: 13px; }
+      .mini-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
+      .mini-form .wide { grid-column: 1 / -1; }
+      .mini-form .act { display: flex; align-items: flex-end; }
+
+      /* Modal form */
+      dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); padding: 0; width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); }
+      dialog::backdrop { background: rgba(10, 20, 17, .55); }
+      dialog form { display: flex; flex-direction: column; max-height: calc(100dvh - 32px); }
+      .dlg-body { padding: 20px 20px 8px; overflow-y: auto; }
+      .dlg-body h2 { margin: 0 0 4px; font-size: 20px; }
+      .dlg-body .hint { color: var(--ink-2); font-size: 14px; margin: 0 0 16px; }
+      fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 0 0 14px; }
+      legend { font-weight: 700; font-size: 14px; padding: 0 6px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .grid .wide { grid-column: 1 / -1; }
+      label.fl { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+      label.fl > input, label.fl > select, label.fl > textarea { margin-top: 4px; font-weight: 400; }
+      .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+      .chip {
+        border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+        border-radius: 999px; padding: 5px 11px; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 36px;
+      }
+      .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+      .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; padding: 12px 20px 16px; border-top: 1px solid var(--line); background: var(--surface); flex: none; }
+
+      /* Scores */
+      .score-latest { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+      .score-chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; padding: 8px 11px; font-size: 13px; line-height: 1.35; }
+      .score-chip b { font-size: 16px; font-family: "IBM Plex Mono", monospace; }
+      .score-chip .t { font-weight: 700; display: block; font-size: 12px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+      .calc-box { border: 1px dashed var(--line); border-radius: 8px; padding: 12px; margin-top: 10px; background: var(--surface); }
+      .calc-total { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--brand-soft); font-size: 15px; }
+      .calc-total b { font-family: "IBM Plex Mono", monospace; font-size: 22px; }
+      .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+      .comp-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+      /* Endoscopy photos */
+      .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; margin-top: 10px; }
+      .photo-cell { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+      .photo-cell img { width: 100%; height: 88px; object-fit: cover; display: block; cursor: zoom-in; }
+      .photo-cell .del { position: absolute; top: 4px; right: 4px; min-height: 28px; width: 28px; padding: 0; border-radius: 999px; background: rgba(10,20,17,.72); color: #fff; border: 0; cursor: pointer; font-size: 13px; line-height: 1; }
+      .photo-hint { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+      dialog.photo-view { width: min(860px, calc(100vw - 20px)); }
+      dialog.photo-view .pv-body { padding: 12px; }
+      dialog.photo-view img { width: 100%; max-height: calc(100dvh - 170px); object-fit: contain; background: #0b1512; border-radius: 8px; display: block; }
+      dialog.photo-view .pv-cap { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 2px 2px; font-size: 14px; color: var(--ink-2); }
+
+      .note-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
+      .note-box h3 { margin: 0 0 8px; font-size: 16px; }
+      .note-box p, .note-box li { font-size: 15px; color: var(--ink-2); }
+      .note-box ol { padding-left: 20px; margin: 8px 0; }
+      .toast {
+        position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+        background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px;
+        font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+        z-index: 50; max-width: calc(100vw - 32px); text-align: center;
+      }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .confirm-bar {
+        position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+        width: min(520px, calc(100vw - 24px)); background: var(--surface); color: var(--ink);
+        border: 1px solid var(--red); border-radius: 12px; box-shadow: 0 10px 34px rgba(0,0,0,.28);
+        padding: 14px 16px; z-index: 60;
+      }
+      .confirm-bar p { margin: 0 0 10px; font-size: 15px; font-weight: 600; }
+      .confirm-bar .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+      .hidden { display: none !important; }
+      footer.foot { margin-top: 34px; color: var(--ink-3); font-size: 13px; text-align: center; }
+
+      @media (max-width: 560px) {
+        .grid { grid-template-columns: 1fr; }
+        header.top h1 { font-size: 22px; }
+        .qitem .when { margin-left: 0; }
+        table.list thead { display: none; }
+        table.list, table.list tbody, table.list tr, table.list td { display: block; width: 100%; }
+        table.list tr { border-bottom: 1px solid var(--line); padding: 6px 0; }
+        table.list td { border-bottom: 0; padding: 3px 8px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .toast { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div>
+          <h1>IBD Biologics Registry</h1>
+          <p>Ulcerative colitis &amp; Crohn's disease patients on biologic therapy — doses, endoscopies, and follow-up updates. Data is saved on this device.</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn primary" id="btnAddTop" type="button">+ Add patient</button>
+        </div>
+      </header>
+
+      <nav class="tabs" role="tablist" aria-label="Registry sections">
+        <button type="button" role="tab" id="tab-patients" aria-selected="true" data-tab="patients">Patients <span class="count" id="tabCount">0</span></button>
+        <button type="button" role="tab" id="tab-data" aria-selected="false" data-tab="data">Data &amp; backup</button>
+        <button type="button" role="tab" id="tab-install" aria-selected="false" data-tab="install">Install on mobile</button>
+      </nav>
+
+      <!-- ===== Patients tab ===== -->
+      <section id="view-patients">
+        <div id="listView">
+          <div class="stats" id="stats"></div>
+
+          <h2 class="sec">Due &amp; upcoming</h2>
+          <div class="queue" id="queue"></div>
+
+          <h2 class="sec">All patients</h2>
+          <div class="toolbar">
+            <div class="search">
+              <input type="search" id="search" placeholder="Search by name, drug, brand, or consultant…" aria-label="Search patients" />
+            </div>
+            <select id="filterDx" aria-label="Filter by diagnosis" style="width:auto; flex: 0 1 190px;">
+              <option value="">All diagnoses</option>
+              <option value="UC">Ulcerative colitis</option>
+              <option value="CD">Crohn's disease</option>
+            </select>
+            <select id="filterDue" aria-label="Filter by dose status" style="width:auto; flex: 0 1 170px;">
+              <option value="">Any dose status</option>
+              <option value="overdue">Overdue</option>
+              <option value="soon">Due within 14 days</option>
+            </select>
+          </div>
+          <div class="cards" id="cards"></div>
+          <div class="empty hidden" id="emptyState">
+            <b>No patients yet</b>
+            Add your first patient to start the registry. Everything is stored on this device and autosaved as you type.
+            <div style="margin-top:14px"><button class="btn primary" id="btnAddEmpty" type="button">+ Add patient</button></div>
+          </div>
+          <div class="empty hidden" id="noMatch">
+            <b>No matches</b>
+            No patient matches the current search or filters.
+          </div>
+        </div>
+
+        <div id="detailView" class="hidden"></div>
+      </section>
+
+      <!-- ===== Data tab ===== -->
+      <section id="view-data" class="hidden">
+        <div class="note-box">
+          <h3>Backup &amp; transfer</h3>
+          <p>Patients are autosaved on this device (this browser). To move the registry to another phone or hand it to a colleague, export a JSON file and import it there. Importing replaces the registry on the device you import into. Export includes IBD scores and endoscopy photos, so the file can be large if you attach many photos — keep an eye on the device storage and export a backup regularly.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+            <button class="btn primary" id="btnExport" type="button">Export JSON</button>
+            <button class="btn" id="btnImport" type="button">Import JSON</button>
+            <input type="file" id="fileImport" accept="application/json,.json" class="hidden" />
+          </div>
+          <p class="mono" id="dataInfo" style="font-size:13px;"></p>
+        </div>
+        <div class="note-box">
+          <h3>Start over</h3>
+          <p>Remove every patient from this device. Export a backup first if you might need the data again.</p>
+          <button class="btn danger" id="btnWipe" type="button">Delete all data on this device</button>
+        </div>
+      </section>
+
+      <!-- ===== Install tab ===== -->
+      <section id="view-install" class="hidden">
+        <div class="note-box">
+          <h3>Add to Home Screen — Android (Chrome)</h3>
+          <ol>
+            <li>Open this page in Chrome on your phone.</li>
+            <li>Tap the ⋮ menu in the top corner.</li>
+            <li>Tap <b>“Add to Home screen”</b> (or “Install app”), then confirm.</li>
+            <li>The registry icon appears on your home screen and opens like an app.</li>
+          </ol>
+        </div>
+        <div class="note-box">
+          <h3>Add to Home Screen — iPhone (Safari)</h3>
+          <ol>
+            <li>Open this page in Safari on your iPhone.</li>
+            <li>Tap the Share button (square with an arrow).</li>
+            <li>Scroll down and tap <b>“Add to Home Screen”</b>, then tap Add.</li>
+            <li>The registry icon appears on your home screen and opens like an app.</li>
+          </ol>
+          <p>Note: the home-screen copy and the browser copy keep separate saved data on iPhone. Pick one copy for your patients and stick to it, and use Export JSON to move data between copies.</p>
+        </div>
+      </section>
+
+      <footer class="foot">For clinical record-keeping support only — always verify doses and dates against the patient's chart.</footer>
+    </div>
+
+    <!-- ===== Patient form dialog ===== -->
+    <dialog id="dlgPatient" aria-labelledby="dlgTitle">
+      <form method="dialog" id="formPatient" novalidate>
+        <div class="dlg-body">
+          <h2 id="dlgTitle">Add patient</h2>
+          <p class="hint">Fields marked * are needed to track doses. Everything else can be filled in later.</p>
+
+          <fieldset>
+            <legend>Patient &amp; diagnosis</legend>
+            <div class="grid">
+              <label class="fl wide">Full name *
+                <input type="text" id="f_name" required autocomplete="off" />
+              </label>
+              <label class="fl">Age
+                <input type="number" id="f_age" min="0" max="120" inputmode="numeric" />
+              </label>
+              <label class="fl">Sex
+                <select id="f_sex">
+                  <option value="">—</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </label>
+              <label class="fl">Diagnosis *
+                <select id="f_dx" required>
+                  <option value="UC">Ulcerative colitis (UC)</option>
+                  <option value="CD">Crohn's disease (CD)</option>
+                </select>
+              </label>
+              <label class="fl">Extent / location
+                <input type="text" id="f_extent" placeholder="e.g. Pancolitis · Ileocolonic" autocomplete="off" />
+              </label>
+              <label class="fl wide">Severity / activity
+                <input type="text" id="f_severity" placeholder="e.g. Moderate–severe, Mayo 9 · SES-CD 12" autocomplete="off" />
+              </label>
+              <label class="fl wide">Medical history
+                <textarea id="f_history" placeholder="Past medical / surgical history, previous IBD therapy, allergies…"></textarea>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Biologic regimen</legend>
+            <div class="grid">
+              <label class="fl">Drug (generic)
+                <select id="f_drug">
+                  <option value="">— Select —</option>
+                </select>
+              </label>
+              <label class="fl">Brand name (Egypt) — الاسم التجاري
+                <input type="text" id="f_brand" placeholder="e.g. Remicade" autocomplete="off" list="brandList" />
+                <datalist id="brandList"></datalist>
+              </label>
+              <div class="wide">
+                <span style="font-size:13px; font-weight:600; color:var(--ink-2);">Quick-pick brand</span>
+                <div class="chips" id="brandChips"></div>
+              </div>
+              <label class="fl">Dose
+                <input type="text" id="f_dose" placeholder="e.g. 5 mg/kg · 300 mg · 40 mg" autocomplete="off" />
+              </label>
+              <label class="fl">Route
+                <select id="f_route">
+                  <option value="">—</option>
+                  <option value="IV infusion">IV infusion</option>
+                  <option value="SC injection">SC injection</option>
+                  <option value="Oral">Oral</option>
+                </select>
+              </label>
+              <label class="fl">Interval (weeks)
+                <input type="number" id="f_interval" min="1" max="52" inputmode="numeric" placeholder="e.g. 8" />
+              </label>
+              <label class="fl">Consultant
+                <input type="text" id="f_consultant" placeholder="Responsible consultant" autocomplete="off" />
+              </label>
+              <label class="fl">Treatment start date
+                <input type="date" id="f_start" />
+              </label>
+              <label class="fl">Last dose date
+                <input type="date" id="f_last" />
+              </label>
+              <label class="fl">Next dose date
+                <input type="date" id="f_next" />
+              </label>
+              <div class="wide" style="font-size:13px; color:var(--ink-2);">If you leave “Next dose” empty, it is calculated from the last dose + interval.</div>
+            </div>
+          </fieldset>
+
+        </div>
+        <div class="dlg-actions">
+          <button class="btn ghost" type="button" id="btnCancelDlg">Cancel</button>
+          <button class="btn primary" type="submit" id="btnSavePatient">Save patient</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Photo viewer -->
+    <dialog id="dlgPhoto" class="photo-view" aria-label="Endoscopy photo">
+      <div class="pv-body">
+        <img id="photoLarge" alt="Endoscopy photo enlarged" />
+        <div class="pv-cap"><span id="photoCap"></span><button class="btn small" type="button" id="btnClosePhoto">Close</button></div>
+      </div>
+    </dialog>
+    <input type="file" id="fileScopePhoto" accept="image/*" multiple class="hidden" />
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="confirm-bar hidden" id="confirmBar" role="alertdialog" aria-labelledby="confirmMsg">
+      <p id="confirmMsg"></p>
+      <div class="row">
+        <button class="btn" type="button" id="confirmNo">Cancel</button>
+        <button class="btn danger" type="button" id="confirmYes" style="background:var(--red); color:#fff;">Yes, delete</button>
+      </div>
+    </div>
+
+    <script>
+      "use strict";
+      var STORE_KEY = "ibd-biologics-registry-v1";
+
+      var DRUGS = ["Infliximab","Adalimumab","Vedolizumab","Ustekinumab","Risankizumab","Mirikizumab","Golimumab","Certolizumab pegol","Upadacitinib","Tofacitinib","Ozanimod","Other"];
+      var BRANDS = [
+        { brand: "Remicade", drug: "Infliximab" },
+        { brand: "Remsima", drug: "Infliximab" },
+        { brand: "Inflectra", drug: "Infliximab" },
+        { brand: "Humira", drug: "Adalimumab" },
+        { brand: "Amgevita", drug: "Adalimumab" },
+        { brand: "Hulio", drug: "Adalimumab" },
+        { brand: "Entyvio", drug: "Vedolizumab" },
+        { brand: "Stelara", drug: "Ustekinumab" },
+        { brand: "Skyrizi", drug: "Risankizumab" },
+        { brand: "Omvoh", drug: "Mirikizumab" },
+        { brand: "Simponi", drug: "Golimumab" },
+        { brand: "Cimzia", drug: "Certolizumab pegol" },
+        { brand: "Rinvoq", drug: "Upadacitinib" },
+        { brand: "Xeljanz", drug: "Tofacitinib" }
+      ];
+      var SCOPE_TYPES = ["Colonoscopy","Gastroscopy (upper GI)","ERCP","Sigmoidoscopy","Capsule endoscopy","Intestinal ultrasound","Other"];
+
+      /* ---------- storage ---------- */
+      function load() {
+        try {
+          var raw = localStorage.getItem(STORE_KEY);
+          if (!raw) return [];
+          var data = JSON.parse(raw);
+          return Array.isArray(data) ? data : [];
+        } catch (e) { return []; }
+      }
+      function save() {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(patients)); } catch (e) { toast("Could not save on this device"); }
+      }
+      var patients = load();
+      var currentId = null;
+      var editingId = null;
+
+      /* ---------- helpers ---------- */
+      function $(id) { return document.getElementById(id); }
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+      function uid() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+      function todayStr() { var d = new Date(); return toISO(d); }
+      function toISO(d) {
+        var m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+        return d.getFullYear() + "-" + m + "-" + day;
+      }
+      function parseDate(s) { if (!s) return null; var d = new Date(s + "T00:00:00"); return isNaN(d) ? null : d; }
+      function fmtDate(s) {
+        var d = parseDate(s); if (!d) return "—";
+        return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+      function addDays(iso, days) { var d = parseDate(iso); if (!d) return ""; d.setDate(d.getDate() + days); return toISO(d); }
+      function daysUntil(iso) {
+        var d = parseDate(iso); if (!d) return null;
+        var t = parseDate(todayStr());
+        return Math.round((d - t) / 86400000);
+      }
+      function relLabel(iso) {
+        var n = daysUntil(iso);
+        if (n === null) return "";
+        if (n < 0) return Math.abs(n) + (Math.abs(n) === 1 ? " day" : " days") + " overdue";
+        if (n === 0) return "Due today";
+        if (n === 1) return "Tomorrow";
+        return "In " + n + " days";
+      }
+      function doseStatus(p) {
+        var n = daysUntil(p.nextDose);
+        if (n === null) return { key: "", label: "No date set", cls: "ok" };
+        if (n < 0) return { key: "overdue", label: "Overdue", cls: "overdue" };
+        if (n <= 14) return { key: "soon", label: "Due soon", cls: "soon" };
+        return { key: "ok", label: "Scheduled", cls: "ok" };
+      }
+      function toast(msg) {
+        var t = $("toast"); t.textContent = msg; t.classList.add("show");
+        clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove("show"); }, 2600);
+      }
+      function findPatient(id) { for (var i = 0; i < patients.length; i++) if (patients[i].id === id) return patients[i]; return null; }
+      function dxName(dx) { return dx === "CD" ? "Crohn's disease" : "Ulcerative colitis"; }
+
+      /* ---------- IBD scores ---------- */
+      var SCORE_TYPES = [
+        { id: "mayo", label: "Mayo Score (Full) — UC", short: "Mayo" },
+        { id: "pmayo", label: "Partial Mayo — UC", short: "Partial Mayo" },
+        { id: "uceis", label: "UCEIS — UC endoscopic", short: "UCEIS" },
+        { id: "hbi", label: "Harvey-Bradshaw Index (HBI) — Crohn's", short: "HBI" },
+        { id: "cdai", label: "CDAI — Crohn's Disease Activity Index", short: "CDAI" },
+        { id: "sescd", label: "SES-CD — Crohn's endoscopic", short: "SES-CD" }
+      ];
+      function scoreLabel(id) { for (var i = 0; i < SCORE_TYPES.length; i++) if (SCORE_TYPES[i].id === id) return SCORE_TYPES[i].label; return id || "Score"; }
+      function scoreShort(id) { for (var i = 0; i < SCORE_TYPES.length; i++) if (SCORE_TYPES[i].id === id) return SCORE_TYPES[i].short; return id || "Score"; }
+      function scoreInterp(type, total) {
+        if (total == null || isNaN(total)) return "";
+        if (type === "mayo") return total <= 2 ? "Remission" : total <= 5 ? "Mild activity" : total <= 10 ? "Moderate activity" : "Severe activity";
+        if (type === "pmayo") return total <= 1 ? "Remission" : total <= 4 ? "Mild activity" : total <= 6 ? "Moderate activity" : "Severe activity";
+        if (type === "uceis") return total <= 1 ? "Remission" : total <= 4 ? "Mild activity" : total <= 6 ? "Moderate activity" : "Severe activity";
+        if (type === "hbi") return total < 5 ? "Remission" : total <= 7 ? "Mild activity" : total <= 16 ? "Moderate activity" : "Severe activity";
+        if (type === "cdai") return total < 150 ? "Remission" : total < 220 ? "Mild activity" : total <= 450 ? "Moderate activity" : "Severe activity";
+        if (type === "sescd") return total <= 2 ? "Endoscopic remission" : total <= 6 ? "Mild activity" : total <= 15 ? "Moderate activity" : "Severe activity";
+        return "";
+      }
+      function sevCls(interp) {
+        if (!interp) return "ok";
+        if (interp.indexOf("Remission") !== -1 || interp.indexOf("remission") !== -1) return "done";
+        if (interp.indexOf("Mild") !== -1) return "booked";
+        if (interp.indexOf("Moderate") !== -1) return "soon";
+        return "overdue";
+      }
+      function latestScore(p, type) {
+        var arr = (p.scores || []).filter(function (s) { return !type || s.type === type; }).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
+        return arr[0] || null;
+      }
+      /* ---------- endoscopy photos: shrink on device before saving ---------- */
+      function processImageFiles(fileList, done) {
+        var files = Array.prototype.slice.call(fileList || []).filter(function (f) { return f.type && f.type.indexOf("image/") === 0; });
+        if (!files.length) { done([]); return; }
+        var out = [], pending = files.length;
+        files.forEach(function (f) {
+          var reader = new FileReader();
+          reader.onload = function () {
+            var img = new Image();
+            img.onload = function () {
+              try {
+                var maxDim = 1280, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+                var scale = Math.min(1, maxDim / Math.max(w, h));
+                var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+                var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+                cv.getContext("2d").drawImage(img, 0, 0, cw, ch);
+                out.push({ data: cv.toDataURL("image/jpeg", 0.82), name: f.name || "Endoscopy photo" });
+              } catch (e) { out.push({ data: String(reader.result), name: f.name || "Endoscopy photo" }); }
+              if (--pending === 0) done(out);
+            };
+            img.onerror = function () { out.push({ data: String(reader.result), name: f.name || "Endoscopy photo" }); if (--pending === 0) done(out); };
+            img.src = String(reader.result);
+          };
+          reader.onerror = function () { if (--pending === 0) done(out); };
+          reader.readAsDataURL(f);
+        });
+      }
+
+      /* ---------- tabs ---------- */
+      var tabBtns = document.querySelectorAll("nav.tabs button");
+      tabBtns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          tabBtns.forEach(function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); });
+          ["patients", "data", "install"].forEach(function (k) { $("view-" + k).classList.toggle("hidden", k !== b.dataset.tab); });
+          if (b.dataset.tab === "data") renderDataInfo();
+          window.scrollTo(0, 0);
+        });
+      });
+
+      /* ---------- dashboard & list ---------- */
+      function renderStats() {
+        var uc = 0, cd = 0, overdue = 0, soon = 0;
+        patients.forEach(function (p) {
+          if (p.diagnosis === "CD") cd++; else uc++;
+          var s = doseStatus(p);
+          if (s.key === "overdue") overdue++;
+          if (s.key === "soon") soon++;
+        });
+        $("tabCount").textContent = patients.length;
+        $("stats").innerHTML =
+          stat(patients.length, "Total patients") +
+          stat(uc, "Ulcerative colitis") +
+          stat(cd, "Crohn's disease") +
+          stat(overdue, "Doses overdue", overdue ? "alert" : "") +
+          stat(soon, "Doses due ≤ 14 days", soon ? "warn" : "");
+        function stat(n, l, cls) { return '<div class="stat ' + (cls || "") + '"><div class="num">' + n + '</div><div class="lbl">' + l + "</div></div>"; }
+      }
+
+      function renderQueue() {
+        var items = [];
+        patients.forEach(function (p) {
+          var n = daysUntil(p.nextDose);
+          if (n !== null && n <= 14) items.push({ id: p.id, name: p.name, dx: p.diagnosis, what: "Next dose — " + drugLabel(p), date: p.nextDose, n: n, kind: "dose" });
+          (p.endoscopies || []).forEach(function (e) {
+            if (e.status === "Booked") {
+              var m = daysUntil(e.date);
+              if (m !== null && m <= 30) items.push({ id: p.id, name: p.name, dx: p.diagnosis, what: e.type + " booked", date: e.date, n: m, kind: "scope" });
+            }
+          });
+        });
+        items.sort(function (a, b) { return a.n - b.n; });
+        var q = $("queue");
+        if (!items.length) {
+          q.innerHTML = '<div class="empty"><b>Nothing due</b>No doses due in the next 14 days and no endoscopies booked in the next 30 days.</div>';
+          return;
+        }
+        q.innerHTML = items.map(function (it) {
+          var cls = it.n < 0 ? "overdue" : "soon";
+          return '<button type="button" class="qitem" data-open="' + esc(it.id) + '">' +
+            '<span class="who">' + esc(it.name) + '</span>' +
+            '<span class="pill ' + (it.dx === "CD" ? "cd" : "uc") + '">' + esc(it.dx) + '</span>' +
+            '<span class="what">' + esc(it.what) + '</span>' +
+            '<span class="when"><span class="pill ' + cls + '">' + esc(relLabel(it.date)) + '</span> ' + esc(fmtDate(it.date)) + "</span></button>";
+        }).join("");
+        bindOpen(q);
+      }
+
+      function drugLabel(p) {
+        var s = p.drug || "";
+        if (p.brand) s = (s ? s + " (" + p.brand + ")" : p.brand);
+        return s || "No biologic recorded";
+      }
+
+      function renderCards() {
+        var q = $("search").value.trim().toLowerCase();
+        var fdx = $("filterDx").value, fdue = $("filterDue").value;
+        var list = patients.filter(function (p) {
+          if (fdx && p.diagnosis !== fdx) return false;
+          if (fdue && doseStatus(p).key !== fdue) return false;
+          if (q) {
+            var hay = [p.name, p.drug, p.brand, p.consultant, dxName(p.diagnosis), p.extent].join(" ").toLowerCase();
+            if (hay.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+        list.sort(function (a, b) {
+          var na = daysUntil(a.nextDose), nb = daysUntil(b.nextDose);
+          if (na === null) na = 99999; if (nb === null) nb = 99999;
+          return na - nb;
+        });
+        $("emptyState").classList.toggle("hidden", patients.length > 0);
+        $("noMatch").classList.toggle("hidden", !(patients.length > 0 && list.length === 0));
+        $("cards").innerHTML = list.map(function (p) {
+          var s = doseStatus(p);
+          return '<button type="button" class="pcard" data-open="' + esc(p.id) + '">' +
+            '<span class="name">' + esc(p.name) + ' <span class="pill ' + (p.diagnosis === "CD" ? "cd" : "uc") + '">' + esc(p.diagnosis) + "</span></span>" +
+            '<span class="meta">' + (p.age !== "" && p.age != null ? esc(p.age) + " y" : "") + (p.sex ? " · " + esc(p.sex) : "") + (p.extent ? " · " + esc(p.extent) : "") + "</span>" +
+            '<span class="drug"><b>' + esc(drugLabel(p)) + "</b>" + (p.dose ? " · " + esc(p.dose) : "") + (p.route ? " · " + esc(p.route) : "") + "</span>" +
+            '<span class="next">Next dose <span class="d">' + esc(fmtDate(p.nextDose)) + '</span> <span class="pill ' + s.cls + '">' + esc(p.nextDose ? relLabel(p.nextDose) : s.label) + "</span></span>" +
+            (function () { var ls = latestScore(p); return ls ? '<span class="next">Latest score <b>' + esc(scoreShort(ls.type)) + " " + esc(ls.total) + '</b> <span class="pill ' + sevCls(ls.interpretation) + '">' + esc(ls.interpretation || "") + "</span></span>" : ""; })() +
+            "</button>";
+        }).join("");
+        bindOpen($("cards"));
+      }
+
+      function bindOpen(root) {
+        root.querySelectorAll("[data-open]").forEach(function (el) {
+          el.addEventListener("click", function () { openDetail(el.getAttribute("data-open")); });
+        });
+      }
+      function renderList() { renderStats(); renderQueue(); renderCards(); }
+
+      /* ---------- detail view ---------- */
+      function openDetail(id) {
+        currentId = id;
+        var p = findPatient(id);
+        if (!p) return;
+        $("listView").classList.add("hidden");
+        var dv = $("detailView");
+        dv.classList.remove("hidden");
+        var s = doseStatus(p);
+        var doses = (p.doses || []).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
+        var scopes = (p.endoscopies || []).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
+        var updates = (p.updates || []).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
+        var scores = (p.scores || []).slice().sort(function (a, b) { return (b.date || "") < (a.date || "") ? -1 : 1; });
+        var latestByType = {};
+        scores.forEach(function (sc) { if (!latestByType[sc.type]) latestByType[sc.type] = sc; });
+
+        dv.innerHTML =
+          '<div class="backlink"><button class="btn" type="button" id="btnBack">← All patients</button></div>' +
+          '<div class="detail-head"><div>' +
+            "<h2>" + esc(p.name) + ' <span class="pill ' + (p.diagnosis === "CD" ? "cd" : "uc") + '">' + esc(dxName(p.diagnosis)) + "</span></h2>" +
+            '<div class="sub">' + [p.age !== "" && p.age != null ? esc(p.age) + " years" : "", esc(p.sex), esc(p.extent), esc(p.severity)].filter(Boolean).join(" · ") + "</div>" +
+          '</div><div class="head-actions">' +
+            '<button class="btn" type="button" id="btnCopy">Copy full case summary</button>' +
+            '<button class="btn" type="button" id="btnEdit">Edit patient</button>' +
+            '<button class="btn danger" type="button" id="btnDelete">Delete</button>' +
+          "</div></div>" +
+
+          '<div class="panel"><h3>Biologic regimen</h3><div class="kv">' +
+            kv("Drug (generic)", p.drug) + kv("Brand name (Egypt)", p.brand) + kv("Dose", p.dose) + kv("Route", p.route) +
+            kv("Interval", p.intervalWeeks ? p.intervalWeeks + " weeks" : "") + kv("Consultant", p.consultant) +
+            kv("Treatment started", fmtDate(p.startDate)) + kv("Last dose", fmtDate(p.lastDose)) +
+            '<div><div class="k">Next dose</div><div class="v"><b>' + esc(fmtDate(p.nextDose)) + '</b> <span class="pill ' + s.cls + '">' + esc(p.nextDose ? relLabel(p.nextDose) : s.label) + "</span></div></div>" +
+          "</div></div>" +
+
+          '<div class="panel"><h3>Medical history</h3><div class="prose">' + esc(p.history) + "</div></div>" +
+
+          '<div class="panel"><h3>IBD activity scores</h3>' +
+            (Object.keys(latestByType).length ? '<div class="score-latest">' + Object.keys(latestByType).map(function (t) { var sc = latestByType[t]; return '<div class="score-chip"><span class="t">' + esc(scoreShort(t)) + ' · ' + esc(fmtDate(sc.date)) + '</span><b>' + esc(sc.total) + '</b> <span class="pill ' + sevCls(sc.interpretation) + '">' + esc(sc.interpretation || "") + "</span></div>"; }).join("") + "</div>" : "") +
+            (scores.length ? '<div class="stack">' + scores.map(function (sc) {
+              var oi = (p.scores || []).indexOf(sc);
+              return '<div class="entry"><div class="top"><b>' + esc(scoreLabel(sc.type)) + '</b><span class="mono">' + esc(fmtDate(sc.date)) + '</span><span style="font-weight:700;">' + esc(sc.total) + '</span><span class="pill ' + sevCls(sc.interpretation) + '">' + esc(sc.interpretation || "") + '</span>' +
+                '<span style="margin-left:auto"><button class="btn small ghost" type="button" data-delscore="' + oi + '" aria-label="Delete score">✕</button></span></div>' +
+                (sc.detail ? '<div class="body" style="font-size:14px;">' + esc(sc.detail) + "</div>" : "") +
+                (sc.note ? '<div class="body" style="font-size:14px;">' + esc(sc.note) + "</div>" : "") + "</div>";
+            }).join("") + "</div>" : '<p style="color:var(--ink-2); margin:0;">No scores recorded yet. Pick a score below — the total and interpretation are calculated automatically.</p>') +
+            '<form id="formScore"><div class="mini-form">' +
+              '<label class="fl">Score type<select id="sc_type">' + SCORE_TYPES.map(function (t) { var sel = (p.diagnosis === "CD" && t.id === "hbi") || (p.diagnosis !== "CD" && t.id === "mayo") ? " selected" : ""; return '<option value="' + t.id + '"' + sel + ">" + t.label + "</option>"; }).join("") + "</select></label>" +
+              '<label class="fl">Date<input type="date" id="sc_date" required value="' + todayStr() + '" /></label>' +
+            '</div><div class="calc-box"><div id="sc_fields"></div><div class="calc-total">Total <b id="sc_total">0</b><span class="pill" id="sc_interp"></span></div></div>' +
+            '<div class="mini-form"><label class="fl wide">Note (optional)<input type="text" id="sc_note" placeholder="e.g. At week 14 review, on steroids…" /></label>' +
+              '<div class="act"><button class="btn primary small" type="submit">Save score</button></div></div></form>' +
+            '<p style="font-size:12px; color:var(--ink-3); margin:10px 0 0;">Mayo: remission ≤2 · mild 3–5 · moderate 6–10 · severe 11–12 &nbsp;|&nbsp; HBI: remission &lt;5 · mild 5–7 · moderate 8–16 · severe &gt;16 &nbsp;|&nbsp; CDAI: remission &lt;150 · mild 150–219 · moderate 220–450 · severe &gt;450</p></div>' +
+
+          '<div class="panel"><h3>Dose log</h3>' +
+            (doses.length ? '<table class="list"><thead><tr><th>Date</th><th>Dose</th><th>Note</th><th></th></tr></thead><tbody>' +
+              doses.map(function (d, i) {
+                return "<tr><td class='mono'>" + esc(fmtDate(d.date)) + "</td><td>" + esc(d.dose) + "</td><td>" + esc(d.note) + '</td><td><button class="btn small ghost" type="button" data-deldose="' + i + '" aria-label="Delete dose entry">✕</button></td></tr>';
+              }).join("") + "</tbody></table>" : '<p style="color:var(--ink-2); margin:0;">No doses logged yet.</p>') +
+            '<form class="mini-form" id="formDose">' +
+              '<label class="fl">Date<input type="date" id="d_date" required value="' + todayStr() + '" /></label>' +
+              '<label class="fl">Dose<input type="text" id="d_dose" value="' + esc(p.dose || "") + '" placeholder="Dose given" /></label>' +
+              '<label class="fl">Note<input type="text" id="d_note" placeholder="Optional note" /></label>' +
+              '<div class="act"><button class="btn primary small" type="submit">Log dose</button></div>' +
+            '</form><p style="font-size:13px; color:var(--ink-2); margin:8px 0 0;">Logging a dose sets it as the last dose and rolls the next dose forward by the interval (' + (p.intervalWeeks ? esc(p.intervalWeeks) + " weeks" : "set an interval on the patient to auto-calculate") + ").</p></div>" +
+
+          '<div class="panel"><h3>Endoscopies &amp; photos</h3>' +
+            (scopes.length ? '<div class="stack">' + scopes.map(function (e) {
+              var oi = (p.endoscopies || []).indexOf(e);
+              var photos = e.photos || [];
+              return '<div class="entry"><div class="top"><b>' + esc(e.type) + '</b><span class="mono">' + esc(fmtDate(e.date)) + '</span><span class="pill ' + (e.status === "Done" ? "done" : "booked") + '">' + esc(e.status) + '</span>' +
+                (e.by ? '<span class="by">by ' + esc(e.by) + "</span>" : "") +
+                '<span style="margin-left:auto"><button class="btn small" type="button" data-addphoto="' + oi + '">Add photos</button> <button class="btn small ghost" type="button" data-delscope="' + oi + '" aria-label="Delete endoscopy">✕</button></span></div>' +
+                (e.result ? '<div class="body">' + esc(e.result) + "</div>" : "") +
+                (photos.length ? '<div class="photo-grid">' + photos.map(function (ph, pi) {
+                  return '<div class="photo-cell"><img src="' + ph.data + '" alt="Endoscopy photo — ' + esc(e.type) + " " + esc(fmtDate(e.date)) + '" data-viewphoto="' + oi + ":" + pi + '" /><button class="del" type="button" data-delphoto="' + oi + ":" + pi + '" aria-label="Delete photo">✕</button></div>';
+                }).join("") + "</div>" : '<div class="photo-hint">No photos yet — tap “Add photos” to upload endoscopy images for this procedure.</div>') + "</div>";
+            }).join("") + "</div>" : '<p style="color:var(--ink-2); margin:0;">No endoscopies recorded yet.</p>') +
+            '<form class="mini-form" id="formScope">' +
+              '<label class="fl">Type<select id="s_type">' + SCOPE_TYPES.map(function (t) { return "<option>" + t + "</option>"; }).join("") + "</select></label>" +
+              '<label class="fl">Date<input type="date" id="s_date" required value="' + todayStr() + '" /></label>' +
+              '<label class="fl">Status<select id="s_status"><option>Booked</option><option>Done</option></select></label>' +
+              '<label class="fl">Performed by<input type="text" id="s_by" placeholder="Endoscopist" /></label>' +
+              '<label class="fl wide">Result / findings<input type="text" id="s_result" placeholder="Findings, biopsies, scores…" /></label>' +
+              '<label class="fl wide">Endoscopy photos (optional)<input type="file" id="s_photos" accept="image/*" multiple /><span class="photo-hint">You can select several images. They are resized on this device and saved with this endoscopy — and included in Export JSON.</span></label>' +
+              '<div class="act"><button class="btn primary small" type="submit">Add endoscopy</button></div>' +
+            "</form></div>" +
+
+          '<div class="panel"><h3>Updates &amp; consultant opinions</h3>' +
+            (updates.length ? '<div class="stack">' + updates.map(function (u, i) {
+              return '<div class="entry"><div class="top"><span class="mono">' + esc(fmtDate(u.date)) + "</span>" +
+                (u.consultant ? "<b>" + esc(u.consultant) + "</b>" : "") +
+                '<span style="margin-left:auto"><button class="btn small ghost" type="button" data-delupdate="' + i + '" aria-label="Delete update">✕</button></span></div>' +
+                '<div class="body">' + esc(u.text) + "</div></div>";
+            }).join("") + "</div>" : '<p style="color:var(--ink-2); margin:0;">No updates yet.</p>') +
+            '<form class="mini-form" id="formUpdate">' +
+              '<label class="fl">Date<input type="date" id="u_date" required value="' + todayStr() + '" /></label>' +
+              '<label class="fl">Consultant<input type="text" id="u_consultant" placeholder="Name (optional)" /></label>' +
+              '<label class="fl wide">Update / opinion<textarea id="u_text" required placeholder="Clinical update, plan, consultant opinion…"></textarea></label>' +
+              '<div class="act"><button class="btn primary small" type="submit">Add update</button></div>' +
+            "</form></div>";
+
+        function kv(k, v) { return '<div><div class="k">' + k + '</div><div class="v">' + esc(v) + "</div></div>"; }
+
+        $("btnBack").addEventListener("click", closeDetail);
+        $("btnEdit").addEventListener("click", function () { openPatientForm(p); });
+        $("btnDelete").addEventListener("click", function () {
+          askConfirm("Delete " + p.name + " and all their records from this device?", function () {
+            patients = patients.filter(function (x) { return x.id !== p.id; });
+            save(); closeDetail(); renderList(); toast("Patient deleted");
+          });
+        });
+        $("btnCopy").addEventListener("click", function () { copySummary(p); });
+
+        $("formDose").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var date = $("d_date").value; if (!date) return;
+          p.doses = p.doses || [];
+          p.doses.push({ date: date, dose: $("d_dose").value.trim(), note: $("d_note").value.trim() });
+          p.lastDose = date;
+          if (p.intervalWeeks) p.nextDose = addDays(date, Number(p.intervalWeeks) * 7);
+          save(); openDetail(p.id); toast("Dose logged — next dose " + fmtDate(p.nextDose));
+        });
+        /* ----- Scores calculator ----- */
+        function selField(id, label, opts) {
+          return '<label class="fl">' + label + '<select id="' + id + '" class="sc-in">' + opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + "</option>"; }).join("") + "</select></label>";
+        }
+        function numField(id, label, val, min, max, step) {
+          return '<label class="fl">' + label + '<input type="number" id="' + id + '" class="sc-in" value="' + val + '" min="' + min + '" max="' + max + '" step="' + (step || 1) + '" inputmode="numeric" /></label>';
+        }
+        function chipsField(id, label, items) {
+          return '<div><span style="font-size:13px; font-weight:600; color:var(--ink-2);">' + label + '</span><div class="comp-list" id="' + id + '">' + items.map(function (it) { return '<button type="button" class="chip sc-chip-btn" aria-pressed="false" data-v="1">' + it + "</button>"; }).join("") + "</div></div>";
+        }
+        function renderScoreFields() {
+          var t = $("sc_type").value, box = $("sc_fields"), h = "";
+          if (t === "mayo" || t === "pmayo") {
+            h = '<div class="calc-grid">' +
+              selField("sc_stool", "Stool frequency", [[0, "0 — Normal"], [1, "1 — 1–2 stools/day more than normal"], [2, "2 — 3–4 more than normal"], [3, "3 — 5+ more than normal"]]) +
+              selField("sc_bleed", "Rectal bleeding", [[0, "0 — No blood"], [1, "1 — Streaks of blood less than half the time"], [2, "2 — Obvious blood most of the time"], [3, "3 — Blood alone passed"]]) +
+              (t === "mayo" ? selField("sc_endo", "Endoscopic findings", [[0, "0 — Normal / inactive"], [1, "1 — Mild (erythema, ↓ vascular pattern)"], [2, "2 — Moderate (marked erythema, friability, erosions)"], [3, "3 — Severe (spontaneous bleeding, ulceration)"]]) : "") +
+              selField("sc_pga", "Physician global assessment", [[0, "0 — Normal"], [1, "1 — Mild disease"], [2, "2 — Moderate disease"], [3, "3 — Severe disease"]]) + "</div>";
+          } else if (t === "uceis") {
+            h = '<div class="calc-grid">' +
+              selField("sc_vasc", "Vascular pattern", [[0, "0 — Normal"], [1, "1 — Patchy obliteration"], [2, "2 — Obliterated"]]) +
+              selField("sc_bleed2", "Bleeding", [[0, "0 — None"], [1, "1 — Mucosal"], [2, "2 — Luminal mild"], [3, "3 — Luminal moderate / severe"]]) +
+              selField("sc_eros", "Erosions & ulcers", [[0, "0 — None"], [1, "1 — Erosions"], [2, "2 — Superficial ulcer"], [3, "3 — Deep ulcer"]]) + "</div>";
+          } else if (t === "hbi") {
+            h = '<div class="calc-grid">' +
+              selField("sc_well", "General well-being (yesterday)", [[0, "0 — Very well"], [1, "1 — Slightly below par"], [2, "2 — Poor"], [3, "3 — Very poor"], [4, "4 — Terrible"]]) +
+              selField("sc_pain", "Abdominal pain (yesterday)", [[0, "0 — None"], [1, "1 — Mild"], [2, "2 — Moderate"], [3, "3 — Severe"]]) +
+              numField("sc_liquid", "Liquid stools per day", 0, 0, 60) +
+              selField("sc_mass", "Abdominal mass", [[0, "0 — None"], [1, "1 — Dubious"], [2, "2 — Definite"], [3, "3 — Definite & tender"]]) + "</div>" +
+              chipsField("sc_comp", "Complications (tap each present — 1 point each)", ["Arthralgia", "Uveitis / iritis", "Erythema nodosum", "Aphthous ulcers", "Pyoderma gangrenosum", "Anal fissure", "New fistula", "Abscess"]);
+          } else if (t === "cdai") {
+            h = '<p style="font-size:13px; color:var(--ink-2); margin:0 0 8px;">Enter the 7-day diary sums, as in the classic CDAI worksheet.</p><div class="calc-grid">' +
+              numField("sc_cd_stools", "Liquid / soft stools — total over 7 days (×2)", 0, 0, 300) +
+              numField("sc_cd_pain", "Abdominal pain — sum of daily 0–3 over 7 days (×5)", 0, 0, 21) +
+              numField("sc_cd_well", "Well-being — sum of daily 0–4 over 7 days (×7)", 0, 0, 28) +
+              numField("sc_cd_comp", "No. of complication types present (×20)", 0, 0, 8) +
+              selField("sc_cd_anti", "Taking antidiarrhoeal / opiates for diarrhoea", [[0, "No (0)"], [1, "Yes (×30)"]]) +
+              selField("sc_cd_mass", "Abdominal mass", [[0, "0 — None (×10)"], [2, "2 — Questionable (×10)"], [5, "5 — Definite (×10)"]]) +
+              numField("sc_cd_hct", "Haematocrit: standard − actual (M 47, F 42) (×6)", 0, -20, 40) +
+              numField("sc_cd_wt", "% below standard weight (×1)", 0, -30, 60) + "</div>";
+          } else if (t === "sescd") {
+            h = '<div class="calc-grid">' + numField("sc_manual", "SES-CD total (from the endoscopy report)", 0, 0, 60) + "</div>" +
+              '<p style="font-size:13px; color:var(--ink-2); margin:8px 0 0;">SES-CD sums ulcer size, ulcerated & affected surface and narrowing across 5 segments. Copy the total from the report; the interpretation is added automatically.</p>';
+          }
+          box.innerHTML = h;
+          box.querySelectorAll(".sc-chip-btn").forEach(function (c) { c.addEventListener("click", function () { c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true"); calcScore(); }); });
+          box.querySelectorAll(".sc-in").forEach(function (el) { el.addEventListener("input", calcScore); el.addEventListener("change", calcScore); });
+          calcScore();
+        }
+        function chipCount(id) { var el = $(id); if (!el) return 0; return el.querySelectorAll('[aria-pressed="true"]').length; }
+        function chipNames(id) { var el = $(id); if (!el) return []; var a = []; el.querySelectorAll('[aria-pressed="true"]').forEach(function (c) { a.push(c.textContent); }); return a; }
+        function calcScore() {
+          var t = $("sc_type").value, total = 0, parts = [];
+          function v(id) { var el = $(id); return el ? Number(el.value) || 0 : 0; }
+          function vt(id) { var el = $(id); return el ? el.options[el.selectedIndex].text : ""; }
+          if (t === "mayo" || t === "pmayo") {
+            total = v("sc_stool") + v("sc_bleed") + v("sc_pga") + (t === "mayo" ? v("sc_endo") : 0);
+            parts = ["Stool " + v("sc_stool"), "Bleeding " + v("sc_bleed")]; if (t === "mayo") parts.push("Endoscopy " + v("sc_endo")); parts.push("PGA " + v("sc_pga"));
+          } else if (t === "uceis") {
+            total = v("sc_vasc") + v("sc_bleed2") + v("sc_eros");
+            parts = ["Vascular " + v("sc_vasc"), "Bleeding " + v("sc_bleed2"), "Erosions/ulcers " + v("sc_eros")];
+          } else if (t === "hbi") {
+            var cc = chipCount("sc_comp");
+            total = v("sc_well") + v("sc_pain") + v("sc_liquid") + v("sc_mass") + cc;
+            parts = ["Well-being " + v("sc_well"), "Pain " + v("sc_pain"), "Liquid stools " + v("sc_liquid"), "Mass " + v("sc_mass"), "Complications " + cc + (cc ? " (" + chipNames("sc_comp").join(", ") + ")" : "")];
+          } else if (t === "cdai") {
+            total = Math.round(v("sc_cd_stools") * 2 + v("sc_cd_pain") * 5 + v("sc_cd_well") * 7 + v("sc_cd_comp") * 20 + v("sc_cd_anti") * 30 + v("sc_cd_mass") * 10 + v("sc_cd_hct") * 6 + v("sc_cd_wt") * 1);
+            parts = ["Stools×2 " + v("sc_cd_stools") * 2, "Pain×5 " + v("sc_cd_pain") * 5, "Well-being×7 " + v("sc_cd_well") * 7, "Complications×20 " + v("sc_cd_comp") * 20, "Antidiarrhoeal " + v("sc_cd_anti") * 30, "Mass×10 " + v("sc_cd_mass") * 10, "Hct×6 " + v("sc_cd_hct") * 6, "Weight " + v("sc_cd_wt")];
+          } else if (t === "sescd") { total = v("sc_manual"); parts = ["SES-CD total from report"]; }
+          var interp = scoreInterp(t, total);
+          $("sc_total").textContent = total;
+          var ip = $("sc_interp"); ip.textContent = interp; ip.className = "pill " + sevCls(interp);
+          return { type: t, total: total, interpretation: interp, detail: parts.join(" · ") };
+        }
+        if ($("sc_type")) { $("sc_type").addEventListener("change", renderScoreFields); renderScoreFields(); }
+        $("formScore").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var r = calcScore();
+          p.scores = p.scores || [];
+          p.scores.push({ type: r.type, date: $("sc_date").value || todayStr(), total: r.total, interpretation: r.interpretation, detail: r.detail, note: $("sc_note").value.trim() });
+          save(); openDetail(p.id); toast(scoreShort(r.type) + " saved — " + r.total + " (" + r.interpretation + ")");
+        });
+
+        $("formScope").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var date = $("s_date").value; if (!date) return;
+          var entry = { type: $("s_type").value, date: date, status: $("s_status").value, by: $("s_by").value.trim(), result: $("s_result").value.trim(), photos: [] };
+          var files = $("s_photos") ? $("s_photos").files : null;
+          processImageFiles(files, function (photos) {
+            entry.photos = photos;
+            p.endoscopies = p.endoscopies || [];
+            p.endoscopies.push(entry);
+            save(); openDetail(p.id); toast(photos.length ? "Endoscopy added with " + photos.length + (photos.length === 1 ? " photo" : " photos") : "Endoscopy added");
+          });
+        });
+        $("formUpdate").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var text = $("u_text").value.trim(); if (!text) return;
+          p.updates = p.updates || [];
+          p.updates.push({ date: $("u_date").value || todayStr(), consultant: $("u_consultant").value.trim(), text: text });
+          save(); openDetail(p.id); toast("Update added");
+        });
+        dv.querySelectorAll("[data-deldose]").forEach(function (b) {
+          b.addEventListener("click", function () { p.doses.splice(Number(b.getAttribute("data-deldose")), 1); save(); openDetail(p.id); });
+        });
+        dv.querySelectorAll("[data-delscope]").forEach(function (b) {
+          b.addEventListener("click", function () { p.endoscopies.splice(Number(b.getAttribute("data-delscope")), 1); save(); openDetail(p.id); });
+        });
+        dv.querySelectorAll("[data-delupdate]").forEach(function (b) {
+          b.addEventListener("click", function () { p.updates.splice(Number(b.getAttribute("data-delupdate")), 1); save(); openDetail(p.id); });
+        });
+        dv.querySelectorAll("[data-delscore]").forEach(function (b) {
+          b.addEventListener("click", function () { p.scores.splice(Number(b.getAttribute("data-delscore")), 1); save(); openDetail(p.id); });
+        });
+        dv.querySelectorAll("[data-addphoto]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            pendingPhotoScope = Number(b.getAttribute("data-addphoto")); pendingPhotoPatient = p.id;
+            $("fileScopePhoto").click();
+          });
+        });
+        dv.querySelectorAll("[data-viewphoto]").forEach(function (img) {
+          img.addEventListener("click", function () {
+            var parts = img.getAttribute("data-viewphoto").split(":"), e = (p.endoscopies || [])[Number(parts[0])], ph = e && (e.photos || [])[Number(parts[1])];
+            if (!ph) return;
+            $("photoLarge").src = ph.data;
+            $("photoCap").textContent = e.type + " · " + fmtDate(e.date) + (ph.name ? " · " + ph.name : "");
+            var d = $("dlgPhoto"); if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
+          });
+        });
+        dv.querySelectorAll("[data-delphoto]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var parts = b.getAttribute("data-delphoto").split(":"), e = (p.endoscopies || [])[Number(parts[0])];
+            if (!e || !e.photos) return;
+            e.photos.splice(Number(parts[1]), 1); save(); openDetail(p.id); toast("Photo removed");
+          });
+        });
+        window.scrollTo(0, 0);
+      }
+      function closeDetail() {
+        currentId = null;
+        $("detailView").classList.add("hidden");
+        $("detailView").innerHTML = "";
+        $("listView").classList.remove("hidden");
+        renderList();
+      }
+      /* ----- Add photos to an existing endoscopy ----- */
+      var pendingPhotoScope = null, pendingPhotoPatient = null;
+      $("fileScopePhoto").addEventListener("change", function () {
+        var files = this.files; this.value = "";
+        if (!files || !files.length || pendingPhotoScope === null) return;
+        var p = findPatient(pendingPhotoPatient); if (!p) return;
+        var e = (p.endoscopies || [])[pendingPhotoScope]; if (!e) return;
+        processImageFiles(files, function (photos) {
+          e.photos = (e.photos || []).concat(photos);
+          save(); openDetail(p.id); toast(photos.length + (photos.length === 1 ? " photo" : " photos") + " added");
+          pendingPhotoScope = null; pendingPhotoPatient = null;
+        });
+      });
+      $("btnClosePhoto").addEventListener("click", function () { var d = $("dlgPhoto"); if (d.close) d.close(); else d.removeAttribute("open"); });
+
+      // In-page confirmation bar (window.confirm is unavailable in embedded views).
+      var confirmCb = null;
+      function askConfirm(msg, cb) {
+        $("confirmMsg").textContent = msg;
+        confirmCb = cb;
+        $("confirmBar").classList.remove("hidden");
+        $("confirmYes").focus();
+      }
+      function hideConfirm() { $("confirmBar").classList.add("hidden"); confirmCb = null; }
+      $("confirmNo").addEventListener("click", hideConfirm);
+      $("confirmYes").addEventListener("click", function () { var cb = confirmCb; hideConfirm(); if (cb) cb(); });
+
+      /* ---------- copy summary ---------- */
+      function buildSummary(p) {
+        var L = [];
+        L.push("IBD BIOLOGICS — CASE SUMMARY");
+        L.push("============================");
+        L.push("Name: " + (p.name || "—"));
+        L.push("Age / Sex: " + [p.age !== "" && p.age != null ? p.age + " y" : "—", p.sex || ""].filter(Boolean).join(" / "));
+        L.push("Diagnosis: " + dxName(p.diagnosis) + (p.extent ? " — " + p.extent : ""));
+        if (p.severity) L.push("Severity: " + p.severity);
+        if (p.history) { L.push(""); L.push("Medical history:"); L.push(p.history); }
+        L.push("");
+        L.push("Biologic regimen:");
+        L.push("  Drug: " + (p.drug || "—") + (p.brand ? " (" + p.brand + " — brand, Egypt)" : ""));
+        L.push("  Dose: " + (p.dose || "—") + (p.route ? " · " + p.route : "") + (p.intervalWeeks ? " · every " + p.intervalWeeks + " weeks" : ""));
+        if (p.consultant) L.push("  Consultant: " + p.consultant);
+        L.push("  Started: " + fmtDate(p.startDate));
+        L.push("  Last dose: " + fmtDate(p.lastDose));
+        L.push("  Next dose: " + fmtDate(p.nextDose) + (p.nextDose ? " (" + relLabel(p.nextDose) + ")" : ""));
+        var doses = (p.doses || []).slice().sort(function (a, b) { return (a.date || "") < (b.date || "") ? -1 : 1; });
+        if (doses.length) {
+          L.push(""); L.push("Dose log:");
+          doses.forEach(function (d) { L.push("  - " + fmtDate(d.date) + (d.dose ? " — " + d.dose : "") + (d.note ? " (" + d.note + ")" : "")); });
+        }
+        var scoresArr = (p.scores || []).slice().sort(function (a, b) { return (a.date || "") < (b.date || "") ? -1 : 1; });
+        if (scoresArr.length) {
+          L.push(""); L.push("IBD activity scores:");
+          scoresArr.forEach(function (sc) { L.push("  - " + fmtDate(sc.date) + " — " + scoreLabel(sc.type) + ": " + sc.total + (sc.interpretation ? " (" + sc.interpretation + ")" : "") + (sc.detail ? " [" + sc.detail + "]" : "") + (sc.note ? " — " + sc.note : "")); });
+        }
+        var scopes = (p.endoscopies || []).slice().sort(function (a, b) { return (a.date || "") < (b.date || "") ? -1 : 1; });
+        if (scopes.length) {
+          L.push(""); L.push("Endoscopies:");
+          scopes.forEach(function (e) { L.push("  - " + fmtDate(e.date) + " — " + e.type + " [" + e.status + "]" + (e.by ? " by " + e.by : "") + (e.result ? ": " + e.result : "") + (e.photos && e.photos.length ? " (" + e.photos.length + (e.photos.length === 1 ? " photo" : " photos") + " attached in the app)" : "")); });
+        }
+        var updates = (p.updates || []).slice().sort(function (a, b) { return (a.date || "") < (b.date || "") ? -1 : 1; });
+        if (updates.length) {
+          L.push(""); L.push("Updates & consultant opinions:");
+          updates.forEach(function (u) { L.push("  - " + fmtDate(u.date) + (u.consultant ? " — " + u.consultant : "") + ": " + u.text); });
+        }
+        return L.join("\n");
+      }
+      function copySummary(p) {
+        var text = buildSummary(p);
+        function done() { toast("Full case summary copied"); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+        } else fallback();
+        function fallback() {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); done(); } catch (e) { toast("Copy not available here"); }
+          document.body.removeChild(ta);
+        }
+      }
+
+      /* ---------- patient form ---------- */
+      var drugSel = $("f_drug");
+      DRUGS.forEach(function (d) { var o = document.createElement("option"); o.value = d; o.textContent = d; drugSel.appendChild(o); });
+      var brandList = $("brandList");
+      BRANDS.forEach(function (b) { var o = document.createElement("option"); o.value = b.brand; o.label = b.drug; brandList.appendChild(o); });
+      var chipsBox = $("brandChips");
+      BRANDS.forEach(function (b) {
+        var c = document.createElement("button");
+        c.type = "button"; c.className = "chip"; c.textContent = b.brand + " · " + b.drug;
+        c.setAttribute("aria-pressed", "false");
+        c.addEventListener("click", function () {
+          $("f_brand").value = b.brand;
+          if (DRUGS.indexOf(b.drug) !== -1) drugSel.value = b.drug;
+          markChips();
+        });
+        c.dataset.brand = b.brand;
+        chipsBox.appendChild(c);
+      });
+      function markChips() {
+        var v = $("f_brand").value.trim().toLowerCase();
+        chipsBox.querySelectorAll(".chip").forEach(function (c) {
+          c.setAttribute("aria-pressed", c.dataset.brand.toLowerCase() === v ? "true" : "false");
+        });
+      }
+      $("f_brand").addEventListener("input", markChips);
+
+      function openPatientForm(p) {
+        editingId = p ? p.id : null;
+        $("dlgTitle").textContent = p ? "Edit patient" : "Add patient";
+        $("btnSavePatient").textContent = p ? "Save changes" : "Save patient";
+        $("f_name").value = p ? p.name || "" : "";
+        $("f_age").value = p && p.age != null ? p.age : "";
+        $("f_sex").value = p ? p.sex || "" : "";
+        $("f_dx").value = p ? p.diagnosis || "UC" : "UC";
+        $("f_extent").value = p ? p.extent || "" : "";
+        $("f_severity").value = p ? p.severity || "" : "";
+        $("f_history").value = p ? p.history || "" : "";
+        drugSel.value = p ? p.drug || "" : "";
+        $("f_brand").value = p ? p.brand || "" : "";
+        $("f_dose").value = p ? p.dose || "" : "";
+        $("f_route").value = p ? p.route || "" : "";
+        $("f_interval").value = p && p.intervalWeeks ? p.intervalWeeks : "";
+        $("f_consultant").value = p ? p.consultant || "" : "";
+        $("f_start").value = p ? p.startDate || "" : "";
+        $("f_last").value = p ? p.lastDose || "" : "";
+        $("f_next").value = p ? p.nextDose || "" : "";
+        markChips();
+        var dlg = $("dlgPatient");
+        if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+      }
+      $("btnCancelDlg").addEventListener("click", function () { $("dlgPatient").close(); });
+      $("formPatient").addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var name = $("f_name").value.trim();
+        if (!name) { toast("Please enter the patient's name"); $("f_name").focus(); return; }
+        var last = $("f_last").value, interval = $("f_interval").value ? Number($("f_interval").value) : null;
+        var next = $("f_next").value;
+        if (!next && last && interval) next = addDays(last, interval * 7);
+        var data = {
+          name: name,
+          age: $("f_age").value === "" ? "" : Number($("f_age").value),
+          sex: $("f_sex").value,
+          diagnosis: $("f_dx").value,
+          extent: $("f_extent").value.trim(),
+          severity: $("f_severity").value.trim(),
+          history: $("f_history").value.trim(),
+          drug: drugSel.value,
+          brand: $("f_brand").value.trim(),
+          dose: $("f_dose").value.trim(),
+          route: $("f_route").value,
+          intervalWeeks: interval,
+          consultant: $("f_consultant").value.trim(),
+          startDate: $("f_start").value,
+          lastDose: last,
+          nextDose: next
+        };
+        if (editingId) {
+          var p = findPatient(editingId);
+          if (p) { Object.keys(data).forEach(function (k) { p[k] = data[k]; }); }
+          save(); $("dlgPatient").close(); toast("Patient updated");
+          renderStats();
+          if (currentId === editingId) openDetail(editingId); else renderList();
+        } else {
+          data.id = uid(); data.doses = []; data.endoscopies = []; data.updates = []; data.scores = [];
+          patients.push(data);
+          save(); $("dlgPatient").close(); toast("Patient added");
+          renderStats();
+          openDetail(data.id);
+        }
+        editingId = null;
+      });
+
+      /* ---------- toolbar events ---------- */
+      $("btnAddTop").addEventListener("click", function () { openPatientForm(null); });
+      $("btnAddEmpty").addEventListener("click", function () { openPatientForm(null); });
+      $("search").addEventListener("input", renderCards);
+      $("filterDx").addEventListener("change", renderCards);
+      $("filterDue").addEventListener("change", renderCards);
+
+      /* ---------- data tab ---------- */
+      function renderDataInfo() {
+        var el = $("dataInfo");
+        if (el) el.textContent = patients.length + (patients.length === 1 ? " patient" : " patients") + " stored on this device.";
+      }
+      $("btnExport").addEventListener("click", function () {
+        var blob = new Blob([JSON.stringify({ app: "ibd-biologics-registry", version: 1, exported: new Date().toISOString(), patients: patients }, null, 2)], { type: "application/json" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "ibd-biologics-registry-" + todayStr() + ".json";
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+        toast("Export downloaded");
+      });
+      $("btnImport").addEventListener("click", function () { $("fileImport").click(); });
+      $("fileImport").addEventListener("change", function () {
+        var f = this.files && this.files[0];
+        if (!f) return;
+        var r = new FileReader();
+        r.onload = function () {
+          try {
+            var parsed = JSON.parse(String(r.result));
+            var arr = Array.isArray(parsed) ? parsed : parsed.patients;
+            if (!Array.isArray(arr)) throw new Error("bad file");
+            arr.forEach(function (p) {
+              if (!p.id) p.id = uid();
+              p.doses = p.doses || []; p.endoscopies = p.endoscopies || []; p.updates = p.updates || []; p.scores = p.scores || [];
+              p.endoscopies.forEach(function (e) { e.photos = e.photos || []; });
+              if (p.diagnosis !== "CD") p.diagnosis = "UC";
+            });
+            patients = arr;
+            save(); closeDetail(); renderList(); renderDataInfo();
+            toast("Imported " + arr.length + (arr.length === 1 ? " patient" : " patients"));
+          } catch (e) { toast("That file could not be imported"); }
+          $("fileImport").value = "";
+        };
+        r.readAsText(f);
+      });
+      $("btnWipe").addEventListener("click", function () {
+        askConfirm("Delete ALL patients from this device? This cannot be undone.", function () {
+          patients = []; save(); closeDetail(); renderList(); renderDataInfo(); toast("All data deleted from this device");
+        });
+      });
+
+      if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+      renderList();
+    </script>
+  </body>
+</html>
